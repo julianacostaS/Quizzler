@@ -10,6 +10,7 @@ import UIKit
 
 class ViewController: UIViewController {
     
+    @IBOutlet weak var scoreLabel: UILabel!
     @IBOutlet weak var questionLabel: UILabel!
     @IBOutlet weak var progressBar: UIProgressView!
     @IBOutlet weak var trueButton: UIButton!
@@ -29,29 +30,26 @@ class ViewController: UIViewController {
     @IBAction func answerButtonPressed(_ sender: UIButton) {
         
         let userAnswer = sender.currentTitle! //True, False
-        quizBrain.checkAnswer(userAnswer)
+        let userGotItRight = quizBrain.checkAnswer(userAnswer)
         
-        if userAnswer == actualAnswer {
+        if userGotItRight {
             sender.backgroundColor = UIColor.green
         } else {
             sender.backgroundColor = UIColor.red
         }
         
-        if questionNumber + 1 < quiz.count {
-            questionNumber += 1 //Increment 1 every time the user presses the true or false button
-        } else {
-            questionNumber = 0
-        }
+        quizBrain.nextQuestion()
         
         Timer.scheduledTimer(timeInterval: 0.2, target: self, selector: #selector(updateUI), userInfo: nil, repeats: false)
         
     }
     
     @objc func updateUI() {
-        questionLabel.text = quiz[questionNumber].text// Gets the first question in the array, position 0.
+        questionLabel.text = quizBrain.getQuestionText()
+        progressBar.progress = quizBrain.getProgress()
+        scoreLabel.text = "Score: \(quizBrain.getScore())"
         trueButton.backgroundColor = UIColor.clear
         falseButton.backgroundColor = UIColor.clear
-        progressBar.progress = Float(questionNumber + 1) / Float(quiz.count)
     }
 }
 
